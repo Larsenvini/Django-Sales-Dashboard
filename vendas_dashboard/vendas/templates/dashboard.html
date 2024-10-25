@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            padding: 20px;
+        }
+        .container {
+            width: 90%;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #fff;
+        }
+        .metrics {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .metric {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 30%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .metric h2 {
+            font-size: 2em;
+            margin: 0;
+        }
+        .metric p {
+            font-size: 1.2em;
+            margin: 0;
+            color: #555;
+        }
+        canvas {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .chart-section {
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sales Dashboard</h1>
+
+        <!-- Key Metrics -->
+        <div class="metrics">
+            <div class="metric">
+                <h2>${{ total_sales }}</h2>
+                <p>Total Sales</p>
+            </div>
+            <div class="metric">
+                <h2>{{ total_orders }}</h2>
+                <p>Total Orders</p>
+            </div>
+            <div class="metric">
+                <h2>${{ avg_sale_value }}</h2>
+                <p>Average Sale</p>
+            </div>
+        </div>
+
+        <!-- Sales Line Chart -->
+        <div class="chart-section">
+            <canvas id="salesChart" width="400" height="200"></canvas>
+        </div>
+
+        <!-- Sales by Region Pie Chart -->
+        <div class="chart-section">
+            <canvas id="regionChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sales Overview Line Chart
+        var ctxSales = document.getElementById('salesChart').getContext('2d');
+        var salesChart = new Chart(ctxSales, {
+            type: 'line',
+            data: {
+                labels: {{ vendas.dates|safe }},
+                datasets: [{
+                    label: 'Total Sales',
+                    data: {{ vendas.totals|safe }},
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+
+        // Sales by Region Pie Chart
+        var ctxRegion = document.getElementById('regionChart').getContext('2d');
+        var regionChart = new Chart(ctxRegion, {
+            type: 'pie',
+            data: {
+                labels: {{ vendas.regioes|safe }},
+                datasets: [{
+                    label: 'Sales by Region',
+                    data: {{ vendas.regioes_totals|safe }},
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'right'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
